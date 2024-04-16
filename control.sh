@@ -1,17 +1,37 @@
 #!/bin/bash
 
-if [[ $# -eq 0 ]]; then
-    echo "Usage: $0 [--start|--stop]"
+# Usage message function for clarity and reusability
+usage() {
+    echo "Usage: $0 [--start|--stop|--restart]"
     exit 1
-fi
+}
 
-if [[ $1 == "--start" ]]; then
+start() {
     docker build -t discord-bot .
     docker run -d --name my-bot --env-file ./conf/tokens.env discord-bot
-elif [[ $1 == "--stop" ]]; then
+}
+
+stop() {
     docker stop my-bot
     docker rm my-bot
-else
-    echo "Invalid option. Usage: $0 [--start|--stop]"
-    exit 1
+}
+
+if [[ $# -eq 0 ]]; then
+    usage
 fi
+
+case "$1" in
+    --start)
+        start
+        ;;
+    --stop)
+        stop
+        ;;
+    --restart)
+        stop
+        start
+        ;;
+    *)
+        usage
+        ;;
+esac
