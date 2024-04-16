@@ -4,11 +4,37 @@ import os
 # Not part of stdlib
 import discord
 
+COMMAND_DIR = 'src/commands'
+CONFIG_PATH = './conf/config.ini'
+
+def get_command_prefix():
+    config = configparser.ConfigParser()
+    config.read(CONFIG_PATH)
+    # Default command prefix is '!'
+    return config.get('settings', 'command_prefix', fallback='!')
+
+def get_extensions():
+    extensions = []
+    for filename in os.listdir(COMMAND_DIR):
+        if filename.endswith('.py') and not filename.startswith('_'):
+            # Removes the '.py' from the filename
+            extension_name = f"commands.{filename[:-3]}" 
+            extensions.append(extension_name)
+    return extensions
+
 def get_intents():
     config = configparser.ConfigParser()
-    config.read('./conf/config.ini')
+    config.read(CONFIG_PATH)
 
     intents = discord.Intents.default()
+
+    # All intents are set in /conf/config.ini:
+    # intents.guilds controls if bot can access guilds (servers) data
+    # intents.members controls if bot can track changes of members in a guild (e.g., role changes, joins, leaves)
+    # intents.presences controls if bot can access presence information (e.g., whether a user is online, what game they're playing)
+    # intents.messages controls if bot can receive messages in channels
+    # intents.message_content controls if bot can read message content itself
+
     intents.guilds = config.getboolean('intents', 'guilds')
     intents.members = config.getboolean('intents', 'members')
     intents.presences = config.getboolean('intents', 'presences')
@@ -23,12 +49,3 @@ def get_token():
     except AttributeError:
         print("Error: DISCORD_TOKEN environment variable not set.")
         exit()
-
-def get_extensions():
-    extensions = []
-    for filename in os.listdir('src/commands'):
-        if filename.endswith('.py') and not filename.startswith('_'):
-            # Removes the '.py' from the filename
-            extension_name = f"commands.{filename[:-3]}" 
-            extensions.append(extension_name)
-    return extensions

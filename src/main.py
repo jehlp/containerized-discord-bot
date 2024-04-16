@@ -11,7 +11,7 @@ async def load_extensions(bot, extensions):
         await bot.load_extension(extension)
 
 async def main():
-    bot = commands.Bot(command_prefix='!', intents=utils.get_intents())
+    bot = commands.Bot(command_prefix=utils.get_command_prefix(), intents=utils.get_intents())
     async with bot:
         await load_extensions(bot, utils.get_extensions())
         await bot.start(utils.get_token())
