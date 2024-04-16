@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Usage message function for clarity and reusability
 usage() {
     echo "Usage: $0 [--start|--stop|--restart]"
     exit 1

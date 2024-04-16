@@ -37,5 +37,5 @@ This is a barebones Discord bot that runs inside a Docker container.
 ### Logs
 - To check the logs of the running bot:
   ```bash
-  docker logs my-bot
+  docker logs -f my-bot
   ```
