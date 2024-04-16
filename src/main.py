@@ -6,13 +6,15 @@ from discord.ext import commands
 # Internal
 import utils
 
-async def main():
-    intents = utils.load_intents()
-    token = utils.load_token()
+async def load_extensions(bot, extensions):
+    for extension in extensions:
+        await bot.load_extension(extension)
 
-    bot = commands.Bot(command_prefix='!', intents=intents)
-    await bot.load_extension('commands')
-    await bot.start(token)
+async def main():
+    bot = commands.Bot(command_prefix='!', intents=utils.get_intents())
+    async with bot:
+        await load_extensions(bot, utils.get_extensions())
+        await bot.start(utils.get_token())
 
 if __name__ == '__main__':
     asyncio.run(main())

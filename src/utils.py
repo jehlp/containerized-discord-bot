@@ -4,7 +4,7 @@ import os
 # Not part of stdlib
 import discord
 
-def load_intents():
+def get_intents():
     config = configparser.ConfigParser()
     config.read('./conf/config.ini')
 
@@ -17,9 +17,18 @@ def load_intents():
 
     return intents
 
-def load_token():
+def get_token():
     try:
         return os.getenv('DISCORD_TOKEN').strip()
     except AttributeError:
         print("Error: DISCORD_TOKEN environment variable not set.")
         exit()
+
+def get_extensions():
+    extensions = []
+    for filename in os.listdir('src/commands'):
+        if filename.endswith('.py') and not filename.startswith('_'):
+            # Removes the '.py' from the filename
+            extension_name = f"commands.{filename[:-3]}" 
+            extensions.append(extension_name)
+    return extensions
