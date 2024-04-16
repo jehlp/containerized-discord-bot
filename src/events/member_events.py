@@ -2,9 +2,9 @@
 from discord.ext import commands
 
 # Internal
-from ._master_event import DiscordEvent
+from ..cog import DiscordCog
 
-class MemberEvents(DiscordEvent):
+class MemberEvents(DiscordCog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         await self.log_event(f'{member} has joined the server.')

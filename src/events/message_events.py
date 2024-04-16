@@ -2,9 +2,9 @@
 from discord.ext import commands
 
 # Internal
-from ._master_event import DiscordEvent
+from ..cog import DiscordCog
 
-class MessageEvents(DiscordEvent):
+class MessageEvents(DiscordCog):
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author.bot:

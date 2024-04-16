@@ -4,7 +4,7 @@ import asyncio
 from discord.ext import commands
 
 # Internal
-import utils
+import src.utils as utils
 
 COMMAND_DIR = 'src/commands'
 EVENT_DIR = 'src/events'

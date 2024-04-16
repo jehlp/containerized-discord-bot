@@ -4,6 +4,7 @@ import os
 # Not part of stdlib
 import discord
 
+BASE_DIR = 'src'
 CONFIG_PATH = './conf/config.ini'
 
 def get_command_prefix():
@@ -14,11 +15,11 @@ def get_command_prefix():
 
 def get_extensions(directory):
     extensions = []
-    directory_path = os.path.basename(directory)
+    subdirectory_path = os.path.basename(directory)
     for filename in os.listdir(directory):
         if filename.endswith('.py') and not filename.startswith('_'):
             # Removes the '.py' from the filename
-            extension_name = f"{directory_path}.{filename[:-3]}" 
+            extension_name = f"{BASE_DIR}.{subdirectory_path}.{filename[:-3]}" 
             extensions.append(extension_name)
     return extensions
 

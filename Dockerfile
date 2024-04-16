@@ -10,4 +10,4 @@ EXPOSE 80
 ENV PYTHONUNBUFFERED=1
 
 CMD ["sh", "-c", "source tokens.env"]
-CMD ["/usr/local/bin/python", "src/main.py"]
+CMD ["/usr/local/bin/python", "-m", "src.main"]
