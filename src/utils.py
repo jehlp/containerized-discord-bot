@@ -6,7 +6,7 @@ import discord
 
 def load_intents():
     config = configparser.ConfigParser()
-    config.read('config.ini')
+    config.read('./conf/config.ini')
 
     intents = discord.Intents.default()
     intents.guilds = config.getboolean('intents', 'guilds')

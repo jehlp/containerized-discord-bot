@@ -7,7 +7,7 @@ fi
 
 if [[ $1 == "--start" ]]; then
     docker build -t discord-bot .
-    docker run -d --name my-bot --env-file ./tokens.env discord-bot
+    docker run -d --name my-bot --env-file ./conf/tokens.env discord-bot
 elif [[ $1 == "--stop" ]]; then
     docker stop my-bot
     docker rm my-bot

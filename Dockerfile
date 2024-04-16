@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 80
 
 CMD ["sh", "-c", "source tokens.env]
-CMD ["/usr/local/bin/python", "main.py"]
+CMD ["/usr/local/bin/python", "src/main.py"]
