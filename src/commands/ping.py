@@ -15,5 +15,8 @@ class Ping(DiscordCog):
         elapsed_time = (end_time - start_time).total_seconds() * 1000
         await message.edit(content=f'🏓 Pong! Response time: {elapsed_time:.2f} ms')
 
+    def help(self):
+        return "Test if the bot is responsive. If responsive, gives response time in ms."
+
 async def setup(bot):
     await bot.add_cog(Ping(bot))

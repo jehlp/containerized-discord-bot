@@ -10,3 +10,7 @@ class DiscordCog(commands.Cog):
 
     async def log_event(self, message):
         print(message)
+
+    def help(self):
+        # If not overwritten, default 'help' is N/A
+        return "No help available for this command."
