@@ -18,7 +18,17 @@ This is a barebones Discord bot that runs inside a Docker container.
    cd containerized-discord-bot
    ```
 
-3. Modify the `tokens.env` file with your Discord bot token.
+3. Create a `tokens.env` file in the `conf` directory that looks like:
+```
+DISCORD_TOKEN=<your-discord-token>
+
+POSTGRES_DB=<your-postgresql-database-name>
+POSTGRES_USER=<your-postgresql-database-username>
+POSTGRES_PASSWORD=<your-postgresql-database-password>
+
+# Use the above values again in DATABASE_URL
+DATABASE_URL=postgresql://<postgres_user>:<postgres_password>@db:5432/<postgres-db>
+```
 
 ### Building the Container
 1. Ensure that `control.sh`is executable:
