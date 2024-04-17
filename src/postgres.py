@@ -26,7 +26,7 @@ def get_user_xp(user_id):
             xp = cur.fetchone()
             return xp[0] if xp else None
 
-def update_user_xp(user_id, xp_increment):
+def update_user_xp(user_id, dx):
     sql = """
     INSERT INTO users (user_id, xp) 
     VALUES (%s, %s) 
@@ -35,6 +35,6 @@ def update_user_xp(user_id, xp_increment):
     """
     with connect_db() as conn:
         with conn.cursor() as cur:
-            cur.execute(sql, (user_id, xp_increment))
+            cur.execute(sql, (user_id, dx))
             conn.commit()
 

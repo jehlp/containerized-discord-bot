@@ -59,10 +59,9 @@ def get_token():
 
 def increment_user_xp(author, dx=10):
     try:
-        current_xp = postgres.get_user_xp(author.id) or 0
+        xp = postgres.get_user_xp(author.id) or 0
         postgres.update_user_xp(author.id, dx)
-        new_xp = current_xp + dx
-        print(f"User {author}'s XP updated from {current_xp} to {new_xp}")
+        print(f"User {author}'s XP updated from {xp} to {xp + dx}")
     except Exception as e:
         print(f"Failed to update XP for {author}: {e}")
 
