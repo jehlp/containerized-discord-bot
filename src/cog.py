@@ -4,6 +4,8 @@ from discord.ext import commands
 class DiscordCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        # Disable the default help command
+        self.bot.help_command = None
 
     async def send_response(self, ctx, message):
         await ctx.send(message)
