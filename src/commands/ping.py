@@ -4,7 +4,7 @@ from datetime import datetime
 from discord.ext import commands
 
 # Internal
-from ..cog import DiscordCog
+from src.cog import DiscordCog
 
 class Ping(DiscordCog):
     @commands.command(name='ping')

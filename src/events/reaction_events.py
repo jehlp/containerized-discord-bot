@@ -2,7 +2,7 @@
 from discord.ext import commands
 
 # Internal
-from ..cog import DiscordCog
+from src.cog import DiscordCog
 
 class ReactionEvents(DiscordCog):
     @commands.Cog.listener()

@@ -3,7 +3,7 @@ from discord.ext import commands
 
 # Internal
 import src.utils as utils
-from ..cog import DiscordCog
+from src.cog import DiscordCog
 
 class MessageEvents(DiscordCog):
     @commands.Cog.listener()
@@ -13,7 +13,7 @@ class MessageEvents(DiscordCog):
 
         # On message send, increase 'XP' of the sender
         utils.increment_user_xp(message.author)
-        
+
         await self.log_event(f'Message from {message.author}: {message.content}')
 
     @commands.Cog.listener()
