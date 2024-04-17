@@ -6,8 +6,8 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 80
+EXPOSE 5432
 
 ENV PYTHONUNBUFFERED=1
 
-CMD ["sh", "-c", "source tokens.env"]
 CMD ["/usr/local/bin/python", "-m", "src.main"]

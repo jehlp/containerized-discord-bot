@@ -6,13 +6,16 @@ usage() {
 }
 
 start() {
-    docker build -t discord-bot .
-    docker run -d --name my-bot --env-file ./conf/tokens.env discord-bot
+    docker-compose up -d
 }
 
 stop() {
-    docker stop my-bot
-    docker rm my-bot
+    docker-compose down
+}
+
+restart() {
+    docker-compose down
+    docker-compose up -d
 }
 
 if [[ $# -eq 0 ]]; then
@@ -27,8 +30,7 @@ case "$1" in
         stop
         ;;
     --restart)
-        stop
-        start
+        restart
         ;;
     *)
         usage
