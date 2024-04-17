@@ -4,8 +4,6 @@ services:
     build: .
     volumes:
       - .:/app
-    environment:
-      - DATABASE_URL=postgresql://user:password@db:5432/mydatabase
     env_file:
       - ./conf/tokens.env
     depends_on:
