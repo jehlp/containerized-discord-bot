@@ -15,11 +15,14 @@ def get_command_prefix():
 
 def get_extensions(directory):
     extensions = []
-    subdirectory_path = os.path.basename(directory)
-    for filename in os.listdir(directory):
-        if filename.endswith('.py') and not filename.startswith('_'):
-            # Removes the '.py' from the filename
-            extension_name = f"{BASE_DIR}.{subdirectory_path}.{filename[:-3]}" 
+    for dirpath, dirnames, filenames in os.walk(directory):
+        # In an extension dir, all .py files not starting with '_' are treated as extensions
+        py_files = [f for f in filenames if f.endswith('.py') and not f.startswith('_')]
+        for filename in py_files:
+            rel_path = os.path.relpath(dirpath, BASE_DIR)
+            module_path = rel_path.replace(os.sep, '.')
+            # The [:-3] is just to remove the '.py' extension (because we're loading a module)
+            extension_name = f"{BASE_DIR}.{module_path}.{filename[:-3]}"
             extensions.append(extension_name)
     return extensions
 
