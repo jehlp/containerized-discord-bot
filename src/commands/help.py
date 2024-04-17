@@ -11,7 +11,7 @@ class Help(DiscordCog):
         if command_name:
             # User asked for help on a specific command
             command = self.bot.get_command(command_name)
-            if command and command.cog and hasattr(command.cog, 'help'):
+            if command and command.cog:
                 help_text = command.cog.help()
                 embed = discord.Embed(title=f"Help for `{command.name}`", description=help_text, color=discord.Color.green())
                 await ctx.send(embed=embed)
@@ -21,10 +21,9 @@ class Help(DiscordCog):
             # General help, list all commands
             embed = discord.Embed(title="Help", description="List of all available commands:", color=discord.Color.blue())
             for cog_name, cog in self.bot.cogs.items():
-                if hasattr(cog, 'help'):
-                    command_list = [f"`{command.name}`: {cog.help()}" for command in cog.get_commands()]
-                    if command_list:
-                        embed.add_field(name=cog_name, value="\n".join(command_list), inline=False)
+                command_list = [f"`{command.name}`: {cog.help()}" for command in cog.get_commands()]
+                if command_list:
+                    embed.add_field(name=cog_name, value="\n".join(command_list), inline=False)
             await ctx.send(embed=embed)
 
     def help(self):
