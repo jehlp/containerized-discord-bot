@@ -21,10 +21,9 @@ This is a barebones Discord bot that runs inside a Docker container.
 3. Modify the `tokens.env` file with your Discord bot token.
 
 ### Building the Container
-1. Ensure that `control.sh` and `db/entrypoint.sh` are executable:
+1. Ensure that `control.sh`is executable:
    ```bash
    chmod +x control.sh
-   chmod +x db/entrypoint.sh
    ```
 
 2. Build the Docker image:
