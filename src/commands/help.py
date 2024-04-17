@@ -12,11 +12,10 @@ class Help(DiscordCog):
             # User asked for help on a specific command
             command = self.bot.get_command(command_name)
             if command and command.cog:
-                help_text = command.cog.help()
-                embed = discord.Embed(title=f"Help for `{command.name}`", description=help_text, color=discord.Color.green())
-                await ctx.send(embed=embed)
+                embed = discord.Embed(title=f"Help for `{command.name}`", description=command.cog.help(), color=discord.Color.green())
+                await self.send_response(ctx, embed=embed)
             else:
-                await ctx.send(f"No command named `{command_name}` found.")
+                await self.send_response(ctx, content=f"No command named `{command_name}` found.")
         else:
             # General help, list all commands
             embed = discord.Embed(title="Help", description="List of all available commands:", color=discord.Color.blue())
@@ -24,7 +23,7 @@ class Help(DiscordCog):
                 command_list = [f"`{command.name}`: {cog.help()}" for command in cog.get_commands()]
                 if command_list:
                     embed.add_field(name=cog_name, value="\n".join(command_list), inline=False)
-            await ctx.send(embed=embed)
+            await self.send_response(ctx, embed=embed)
 
     def help(self):
         return "Use `!help` to get a list of all commands, or `!help <command>` for detailed help on a specific command."
