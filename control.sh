@@ -6,7 +6,8 @@ usage() {
 }
 
 start() {
-    docker-compose up -d
+    docker compose build --no-cache
+    docker-compose up -d 
 }
 
 stop() {
@@ -15,6 +16,7 @@ stop() {
 
 restart() {
     docker-compose down
+    docker compose build --no-cache
     docker-compose up -d
 }
 
