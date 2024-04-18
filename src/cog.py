@@ -7,9 +7,6 @@ class DiscordCog(commands.Cog):
         # Disable the default help command
         self.bot.help_command = None
 
-    async def send_response(self, ctx, content=None, embed=None):
-        return await ctx.send(content=content, embed=embed)
-
     async def log_event(self, message):
         print(message)
 

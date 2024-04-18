@@ -10,7 +10,7 @@ class Ping(DiscordCog):
     @commands.command(name='ping')
     async def command(self, ctx):
         start_time = datetime.now()
-        message = await self.send_response(ctx, content='🏓 Pong!')
+        message = await ctx.send(content='🏓 Pong!')
         end_time = datetime.now()
         elapsed_time = (end_time - start_time).total_seconds() * 1000
         await message.edit(content=f'🏓 Pong! Response time: {elapsed_time:.2f} ms')
