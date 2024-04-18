@@ -4,6 +4,8 @@ services:
     build: .
     volumes:
       - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1
     env_file:
       - ./conf/tokens.env
     depends_on:
@@ -12,11 +14,6 @@ services:
       - backend
   db:
     image: postgres:latest
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d mydatabase"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     env_file:
       - ./conf/tokens.env
     volumes:
