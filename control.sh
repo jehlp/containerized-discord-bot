@@ -7,17 +7,17 @@ usage() {
 
 start() {
     docker compose build --no-cache
-    docker-compose up -d 
+    docker compose up -d 
 }
 
 stop() {
-    docker-compose down
+    docker compose down
 }
 
 restart() {
-    docker-compose down
+    docker compose down
     docker compose build --no-cache
-    docker-compose up -d
+    docker compose up -d
 }
 
 if [[ $# -eq 0 ]]; then
