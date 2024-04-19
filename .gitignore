@@ -2,3 +2,4 @@ __pycache__/
 .DS_Store
 conf/tokens.env
 **.mp4
+**.mp3
