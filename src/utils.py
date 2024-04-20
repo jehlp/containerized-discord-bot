@@ -1,14 +1,55 @@
+import random
 import configparser
 import os
 
 # Not part of stdlib
 import discord
+import requests
 
 # Internal
 import src.postgres as postgres
 
 BASE_DIR = 'src'
 CONFIG_PATH = './conf/config.ini'
+
+def get_random_word(length) -> str|None:
+    file_path = "./random_words.txt"
+    content = None
+    word = None
+
+    # get random word from existing file
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as file:
+            content = file.read()
+
+    # generate random words file
+    else:
+        url = "https://api.github.com/gists/1976236" # wiktionary top 100k frequently used words
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            json = response.json()
+            content = str(json['files']['wiki-100k.txt']['content']).split('\n')
+
+            filtered_lines = [line for line in content if line.isalpha() and line.islower() and line.isascii()]
+            content = '\n'.join(filtered_lines)
+
+            with open(file_path, 'w') as file:
+                file.write(content)
+        else:
+            response.raise_for_status()
+            return
+
+    # get word in random order
+    words = content.split()
+    random.shuffle(words)
+
+    for w in words:
+        if len(w) == length:
+            word = w
+            break
+
+    return word
 
 def get_command_prefix():
     config = configparser.ConfigParser()
