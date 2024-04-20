@@ -3,3 +3,4 @@ __pycache__/
 conf/tokens.env
 **.mp4
 **.mp3
+**.txt
