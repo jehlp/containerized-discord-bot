@@ -1,17 +1,13 @@
-from datetime import datetime
-
-# Not part of stdlib
+import datetime
+import src.cog
 from discord.ext import commands
 
-# Internal
-from src.cog import DiscordCog
-
-class Ping(DiscordCog):
+class Ping(src.cog.DiscordCog):
     @commands.command(name='ping')
     async def command(self, ctx):
-        start_time = datetime.now()
+        start_time = datetime.datetime.now()
         message = await ctx.send(content='🏓 Pong!')
-        end_time = datetime.now()
+        end_time = datetime.datetime.now()
         elapsed_time = (end_time - start_time).total_seconds() * 1000
         await message.edit(content=f'🏓 Pong! Response time: {elapsed_time:.2f} ms')
 

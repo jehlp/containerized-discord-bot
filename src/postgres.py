@@ -1,8 +1,6 @@
 import os
-from time import sleep
-
-# Not part of stdlib
 import psycopg2
+import time
 
 def connect_db(retries=5, delay=5):
     while retries > 0:
@@ -10,7 +8,7 @@ def connect_db(retries=5, delay=5):
             return psycopg2.connect(os.getenv('DATABASE_URL'))
         except psycopg2.OperationalError as e:
             print(f"Database connection failed, retrying in {delay} seconds...")
-            sleep(delay)
+            time.sleep(delay)
             retries -= 1
     raise Exception("Failed to connect to the database after several attempts.")
 

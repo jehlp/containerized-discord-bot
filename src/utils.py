@@ -1,11 +1,9 @@
 import configparser
-import os
-
-# Not part of stdlib
 import discord
-
-# Internal
-import src.postgres as postgres
+import discord.utils
+import os
+import src.postgres
+from discord.ext import commands
 
 BASE_DIR = 'src'
 CONFIG_PATH = './conf/config.ini'
@@ -50,6 +48,12 @@ def get_intents():
 
     return intents
 
+def get_shutdown_role():
+    config = configparser.ConfigParser()
+    config.read(CONFIG_PATH)
+    # Default shutdown role is 'administrator'
+    return config.get('settings', 'shutdown_role', fallback='administrator')
+
 def get_token():
     try:
         return os.getenv('DISCORD_TOKEN').strip()
@@ -57,11 +61,14 @@ def get_token():
         print("Error: DISCORD_TOKEN environment variable not set.")
         exit()
 
+def has_role(author, role_name):
+    role = discord.utils.get(author.guild.roles, name=role_name)
+    return role in author.roles
+
 def increment_user_xp(author, dx=10):
     try:
-        xp = postgres.get_user_xp(author.id) or 0
-        postgres.update_user_xp(author.id, dx)
+        xp = src.postgres.get_user_xp(author.id) or 0
+        src.postgres.update_user_xp(author.id, dx)
         print(f"User {author}'s XP updated from {xp} to {xp + dx}")
     except Exception as e:
         print(f"Failed to update XP for {author}: {e}")
-

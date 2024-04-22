@@ -1,7 +1,7 @@
 # Not part of stdlib
-from discord.ext import commands
+import discord 
 
-class DiscordCog(commands.Cog):
+class DiscordCog(discord.ext.commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         # Disable the default help command

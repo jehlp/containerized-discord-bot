@@ -1,11 +1,8 @@
-# Not part of stdlib
 import discord
+import src.cog
 from discord.ext import commands
 
-# Internal
-from src.cog import DiscordCog
-
-class Help(DiscordCog):
+class Help(src.cog.DiscordCog):
     @commands.command(name='help')
     async def command(self, ctx, *, command_name: str = None):
         if command_name:

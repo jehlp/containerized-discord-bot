@@ -1,10 +1,7 @@
-# Not part of stdlib
+import src.cog
 from discord.ext import commands
 
-# Internal
-from src.cog import DiscordCog
-
-class MemberEvents(DiscordCog):
+class MemberEvents(src.cog.DiscordCog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         await self.log_event(f'{member} has joined the server.')
