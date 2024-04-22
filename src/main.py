@@ -26,6 +26,5 @@ async def main():
             await bot.close()
         print("Bot is closed. Cleanup done.")
 
-
 if __name__ == '__main__':
     asyncio.run(main())

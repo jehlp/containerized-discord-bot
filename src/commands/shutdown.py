@@ -32,6 +32,5 @@ class Shutdown(src.cog.DiscordCog):
     def help(self):
         return f"Shuts down the bot. Requires role {self.shutdown_role}."
 
-
 async def setup(bot):
     await bot.add_cog(Shutdown(bot))
