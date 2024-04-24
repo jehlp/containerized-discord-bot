@@ -16,7 +16,8 @@ class Help(src.cog.DiscordCog):
         else:
             # General help, list all commands
             embed = discord.Embed(title="Help", description="List of all available commands:", color=discord.Color.blue())
-            for cog_name, cog in self.bot.cogs.items():
+            # Sort commands alphabetically
+            for cog_name, cog in sorted(self.bot.cogs.items(), key=lambda item: item[0]):
                 command_list = [f"`{command.name}`: {cog.help()}" for command in cog.get_commands()]
                 if command_list:
                     embed.add_field(name=cog_name, value="\n".join(command_list), inline=False)
