@@ -2,7 +2,7 @@ import configparser
 import discord
 import discord.utils
 import os
-import src.postgres
+import src.utils.postgres
 from discord.ext import commands
 
 BASE_DIR = 'src'
@@ -67,8 +67,8 @@ def has_role(author, role_name):
 
 def increment_user_xp(author, dx=10):
     try:
-        xp = src.postgres.get_user_xp(author.id) or 0
-        src.postgres.update_user_xp(author.id, dx)
+        xp = src.utils.postgres.get_user_xp(author.id) or 0
+        src.utils.postgres.update_user_xp(author.id, dx)
         print(f"User {author}'s XP updated from {xp} to {xp + dx}")
     except Exception as e:
         print(f"Failed to update XP for {author}: {e}")

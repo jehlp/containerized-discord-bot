@@ -1,29 +1,25 @@
 import asyncio
-import src.utils
+import src.utils.general
+import src.utils.asynchronous
 from discord.ext import commands
 
 COMMAND_DIR = 'src/commands'
 EVENT_DIR = 'src/events'
 
-async def load_extensions(bot, extensions):
-    for extension in extensions:
-        await bot.load_extension(extension)
-        print("loaded", extension)
-
 async def main():
-    bot = commands.Bot(command_prefix=src.utils.get_command_prefix(), intents=src.utils.get_intents())
+    bot = commands.Bot(command_prefix=src.utils.general.get_command_prefix(), intents=src.utils.general.get_intents())
     try:
         async with bot:
-            await load_extensions(bot, src.utils.get_extensions(COMMAND_DIR))
-            await load_extensions(bot, src.utils.get_extensions(EVENT_DIR))
-            await bot.start(src.utils.get_token())
+            await src.utils.asynchronous.load_extensions(bot, src.utils.general.get_extensions(COMMAND_DIR))
+            await src.utils.asynchronous.load_extensions(bot, src.utils.general.get_extensions(EVENT_DIR))
+            await bot.start(src.utils.general.get_token())
     except asyncio.CancelledError:
         print("CancelledError caught (expected during shutdown)...")
     except Exception as e:
         print(f"An unexpected exception occurred: {e}")
     finally:
         if not bot.is_closed():
-            await bot.close()
+            await src.utils.asynchronous.graceful_shutdown()
         print("Bot is closed. Cleanup done.")
 
 if __name__ == '__main__':
