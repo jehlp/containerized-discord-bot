@@ -2,4 +2,5 @@ beautifulsoup4
 discord.py
 nltk
 psycopg2-binary
+pytube
 requests

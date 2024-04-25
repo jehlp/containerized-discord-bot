@@ -4,7 +4,7 @@ from discord.ext import commands
 
 class Help(src.cog.DiscordCog):
     @commands.command(name='help')
-    async def command(self, ctx, *, command_name=None):
+    async def command(self, ctx, command_name=None):
         if command_name:
             # User asked for help on a specific command
             command = self.bot.get_command(command_name)

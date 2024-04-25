@@ -9,6 +9,16 @@ import src.utils.general
 import urllib
 from discord.ext import commands
 
+def scrape_images_from_google(search_term):
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                             "AppleWebKit/537.36 (KHTML, like Gecko) "
+                             "Chrome/58.0.3029.110 Safari/537.3"}
+    url = f"https://www.google.com/search?hl=en&tbm=isch&q={urllib.parse.quote(search_term)}"
+    response = requests.get(url, headers=headers)
+    soup = bs4.BeautifulSoup(response.text, 'html.parser')
+    # Don't return the first result from the webscraper, it's usually the google logo
+    return [img['src'] for img in soup.find_all('img')][1:] 
+
 class ImageSearch(src.cog.DiscordCog):
     def __init__(self, bot):
         super().__init__(bot)
@@ -18,11 +28,11 @@ class ImageSearch(src.cog.DiscordCog):
         self.word_list = [word for word, count in nltk.probability.FreqDist(words).most_common(5000) if len(word) <= 8]
 
     @commands.command(name='img')
-    async def command(self, ctx, *, search_term=None):
+    async def command(self, ctx, search_term=None):
         if not search_term:
             search_term = ' '.join(random.sample(self.word_list, 2))
 
-        images = self.scrape_images_from_google(search_term)
+        images = scrape_images_from_google(search_term)
         current_index = 0
         total_images = len(images)
 
@@ -50,16 +60,6 @@ class ImageSearch(src.cog.DiscordCog):
             except asyncio.TimeoutError:
                 await message.clear_reactions()
                 break
-
-    def scrape_images_from_google(self, search_term):
-        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                                 "AppleWebKit/537.36 (KHTML, like Gecko) "
-                                 "Chrome/58.0.3029.110 Safari/537.3"}
-        url = f"https://www.google.com/search?hl=en&tbm=isch&q={urllib.parse.quote(search_term)}"
-        response = requests.get(url, headers=headers)
-        soup = bs4.BeautifulSoup(response.text, 'html.parser')
-        # Don't return the first result from the webscraper, it's usually the google logo
-        return [img['src'] for img in soup.find_all('img')][1:] 
 
     def help(self):
         return "Scrapes the web for images matching a search term. If no search term is provided, it will be generated at random. Usage: `!img <search-term>`"
