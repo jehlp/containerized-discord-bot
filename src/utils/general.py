@@ -54,6 +54,12 @@ def get_intents():
 
     return intents
 
+def get_max_upload_size_mb():
+    config = configparser.ConfigParser()
+    config.read(CONFIG_PATH)
+    # Default upload size is 16MB (Non-Nitro)
+    return int(config.get('settings', 'max_upload_size_mb', fallback=16))
+
 def get_shutdown_role():
     config = configparser.ConfigParser()
     config.read(CONFIG_PATH)
