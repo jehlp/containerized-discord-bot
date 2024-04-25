@@ -1,6 +1,5 @@
 import configparser
 import discord
-import discord.utils
 import os
 import src.utils.postgres
 from discord.ext import commands
