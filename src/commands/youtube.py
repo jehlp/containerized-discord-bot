@@ -4,6 +4,7 @@ import os
 import pytube
 import src.cog
 import threading
+import uuid
 from discord.ext import commands
 
 def download_file(stream, file_path, file_name):
@@ -18,10 +19,16 @@ class YoutubeMP4(src.cog.DiscordCog):
         format = "mp4"
         yt = None
 
+        file_name = f"temp_video_{uuid.uuid4()}.{format}"
+        file_path = os.path.join(os.getcwd(), file_name)
+
         def send_file(stream, file_path):
             async def send_async():
-                with open(file_path, 'rb') as file:
-                    await ctx.send(file=discord.File(file))
+                try:
+                    with open(file_path, 'rb') as file:
+                        await ctx.send(file=discord.File(file))
+                finally:
+                    os.remove(file_path)
             asyncio.run_coroutine_threadsafe(send_async(), ctx.bot.loop)
 
         try:
@@ -37,15 +44,11 @@ class YoutubeMP4(src.cog.DiscordCog):
             await ctx.send(content='No matching stream of quality found, choosing lower quality one...')
             stream = filter_streams.get_lowest_resolution()
 
-        file_name = f"temp_video.{format}"
-        file_d = os.getcwd()
-        file_path = os.path.join(os.getcwd(), file_name)
-
         if os.path.exists(file_path):
             os.remove(file_path)
 
         # Use another thread to avoid blocking further commands
-        thread = threading.Thread(target=download_file, args=(stream, file_d, file_name))
+        thread = threading.Thread(target=download_file, args=(stream, os.getcwd(), file_name))
         thread.start()
 
     def help(self):
