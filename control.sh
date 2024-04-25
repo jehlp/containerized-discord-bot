@@ -1,7 +1,7 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: $0 [--start|--stop|--restart]"
+    echo "Usage: $0 [start|stop|restart]"
     exit 1
 }
 
@@ -25,13 +25,13 @@ if [[ $# -eq 0 ]]; then
 fi
 
 case "$1" in
-    --start)
+    start)
         start
         ;;
-    --stop)
+    stop)
         stop
         ;;
-    --restart)
+    restart)
         restart
         ;;
     *)

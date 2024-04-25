@@ -38,11 +38,11 @@ This is a barebones Discord bot that runs inside a Docker container.
 
 2. Build the Docker image:
    ```bash
-   ./control.sh --start
+   ./control.sh start
    ```
 3. Clean up:
    ```bash
-   ./control.sh --stop
+   ./control.sh stop
    ```
 ### Logs
 - To check the logs of the running bot:
