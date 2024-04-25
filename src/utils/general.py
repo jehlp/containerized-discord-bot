@@ -8,6 +8,13 @@ from discord.ext import commands
 BASE_DIR = 'src'
 CONFIG_PATH = './conf/config.ini'
 
+def create_image_embed(image_url, footer_text=None, color=discord.Color.teal()):
+    embed = discord.Embed(color=color)
+    embed.set_image(url=image_url)
+    if footer_text:
+        embed.set_footer(text=footer_text)
+    return embed
+
 def get_command_prefix():
     config = configparser.ConfigParser()
     config.read(CONFIG_PATH)
