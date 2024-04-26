@@ -22,7 +22,7 @@ def trim_file_if_too_large(file_path, format='mp4'):
         temp_file_path = f"{file_path}.temp"
         ffmpeg_command = [
             "ffmpeg", "-i", file_path, "-fs", str(int(max_file_size_mb * (BYTES_PER_KB ** 2))), 
-            "-c", "copy", "-f", "mp4", temp_file_path
+            "-c", "copy", "-f", format, temp_file_path
         ]
         print("Executing:", ' '.join(ffmpeg_command))        
         result = subprocess.run(ffmpeg_command, capture_output=True)
