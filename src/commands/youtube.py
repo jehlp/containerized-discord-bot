@@ -3,6 +3,7 @@ import discord
 import os
 import pytube
 import src.cog
+import src.utils.asynchronous
 import src.utils.general
 import subprocess
 import threading
@@ -10,6 +11,49 @@ import uuid
 from discord.ext import commands
 
 BYTES_PER_KB = 1024
+
+class YoutubeSearch(src.cog.DiscordCog):
+    @commands.command(name='yt')
+    async def command(self, ctx, *, search_term=None):
+        search = pytube.Search(search_term)
+        results = list(search.results)
+
+        if not results:
+            await ctx.send("No results found.")
+            return
+
+        current_index = 0
+        embed = src.utils.general.create_embed(
+            title=f'{results[current_index].title}',
+            url=f"https://www.youtube.com/watch?v={results[current_index].video_id}",
+            color=discord.Color.red(),
+            thumbnail=results[current_index].thumbnail_url,
+            footer_text=f"Video {current_index + 1} of {len(results)} | Search results for `{search_term}`"
+        )
+        message = await ctx.send(embed=embed)
+
+        emojis = ['⬅️', '➡️', '⬇️']
+        for emoji in emojis:
+            await message.add_reaction(emoji)
+
+        async def update_func(index, items):
+            new_embed = src.utils.general.create_embed(
+                title=f'{items[index].title}',
+                url=f"https://www.youtube.com/watch?v={items[index].video_id}",
+                color=discord.Color.red(),
+                thumbnail=items[index].thumbnail_url,
+                footer_text=f"Video {index + 1} of {len(items)} | Search results for `{search_term}`"
+            )
+            await message.edit(embed=new_embed)
+
+        index, action = await src.utils.asynchronous.navigate(self.bot, ctx, message, emojis, results, update_func)
+        if action == 'download':
+            video_url = f"https://www.youtube.com/watch?v={results[index].video_id}"
+            await ctx.invoke(self.bot.get_command('ytmp4'), url=video_url)
+            await message.clear_reactions()
+        
+    def help(self):
+        return "Browses youtube for a search term. Down arrow reacting on a result will download the video. Usage: `!yt <search-term>`"
 
 class YoutubeToMP4(src.cog.DiscordCog):
     def __init__(self, bot):
@@ -38,7 +82,7 @@ class YoutubeToMP4(src.cog.DiscordCog):
 
         # Because of Discord API rate limits, we only update the progress bar at intervals of 5%
         if int(100 * progress) % 5 == 0 or bytes_remaining == 0:
-            embed = discord.Embed(
+            embed = src.utils.general.create_embed(
                 title="Downloading...",
                 description=f"{self.yt_title} by {self.yt_author}\nProgress: {'█' * int(20 * progress) + '░' * int(20 * (1 - progress))} {int(100 * progress)}%",
                 color=discord.Color.gold()
@@ -90,7 +134,7 @@ class YoutubeToMP4(src.cog.DiscordCog):
             if not stream:
                 stream = filter_streams.get_lowest_resolution()
 
-            initial_embed = discord.Embed(
+            initial_embed = src.utils.general.create_embed(
                 title="Initializing Download...",
                 description=f"{self.yt_title} by {self.yt_author}", 
                 color=discord.Color.gold()
@@ -112,7 +156,7 @@ class YoutubeToMP4(src.cog.DiscordCog):
             with open(file_path, 'rb') as file:
                 await ctx.send(file=discord.File(file))  
 
-            final_embed = discord.Embed(
+            final_embed = src.utils.general.create_embed(
                 title="Download Complete!",
                 description=f"{self.yt_title} by {self.yt_author}", 
                 color=discord.Color.green()
@@ -129,3 +173,4 @@ class YoutubeToMP4(src.cog.DiscordCog):
 
 async def setup(bot):
     await bot.add_cog(YoutubeToMP4(bot))
+    await bot.add_cog(YoutubeSearch(bot))

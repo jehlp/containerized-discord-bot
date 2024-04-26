@@ -1,10 +1,10 @@
-import asyncio
 import bs4
 import discord
 import nltk
 import random
 import requests
 import src.cog
+import src.utils.asynchronous
 import src.utils.general
 import urllib
 from discord.ext import commands
@@ -28,7 +28,7 @@ class ImageSearch(src.cog.DiscordCog):
         self.word_list = [word for word, count in nltk.probability.FreqDist(words).most_common(5000) if len(word) <= 8]
 
     @commands.command(name='img')
-    async def command(self, ctx, search_term=None):
+    async def command(self, ctx, *, search_term=None):
         if not search_term:
             search_term = ' '.join(random.sample(self.word_list, 2))
 
@@ -37,29 +37,21 @@ class ImageSearch(src.cog.DiscordCog):
         total_images = len(images)
 
         footer_text = f"Image {current_index + 1} of {total_images} | Search results for '{search_term}'"
-        message = await ctx.send(embed=src.utils.general.create_image_embed(images[0], footer_text))
+        message = await ctx.send(embed=src.utils.general.create_embed(image_url=images[0], footer_text=footer_text))
 
-        for emoji in ['⬅️', '➡️']:
+        emojis = ['⬅️', '➡️']
+
+        for emoji in emojis:
             await message.add_reaction(emoji)
 
-        while True:
-            try:
-                reaction, user = await self.bot.wait_for(
-                    'reaction_add', 
-                    timeout=60.0, 
-                    check=lambda reaction, user: user != self.bot.user and str(reaction.emoji) in ['⬅️', '➡️'] and reaction.message.id == message.id
-                )
-                if str(reaction.emoji) == '➡️':
-                    current_index = (current_index + 1) % len(images)
-                elif str(reaction.emoji) == '⬅️':
-                    current_index = (current_index - 1) % len(images)
+        async def update_func(index, items):
+            new_embed = src.utils.general.create_embed(
+                image_url=items[index], 
+                footer_text=f"Image {index + 1} of {len(items)} | Search results for '{search_term}'"
+            )
+            await message.edit(embed=new_embed)
 
-                footer_text = f"Image {current_index + 1} of {total_images} | Search results for '{search_term}'"
-                await message.edit(embed=src.utils.general.create_image_embed(images[current_index], footer_text))
-                await message.remove_reaction(reaction, user)
-            except asyncio.TimeoutError:
-                await message.clear_reactions()
-                break
+        await src.utils.asynchronous.navigate(self.bot, ctx, message, emojis, images, update_func)
 
     def help(self):
         return "Scrapes the web for images matching a search term. If no search term is provided, it will be generated at random. Usage: `!img <search-term>`"

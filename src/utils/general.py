@@ -7,12 +7,30 @@ from discord.ext import commands
 BASE_DIR = 'src'
 CONFIG_PATH = './conf/config.ini'
 
-def create_image_embed(image_url, footer_text=None, color=discord.Color.teal()):
+def create_embed(title=None, description=None, url=None, image_url=None, footer_text=None, thumbnail=None, color=discord.Color.teal()):
     embed = discord.Embed(color=color)
-    embed.set_image(url=image_url)
+    if title:
+        embed.title = title
+    if description:
+        embed.description = description
+    if url:
+        embed.url = url
+    if image_url:
+        embed.set_image(url=image_url)
     if footer_text:
         embed.set_footer(text=footer_text)
+    if thumbnail:
+        embed.set_thumbnail(url=thumbnail)
     return embed
+
+def create_reaction_check(message_id, user, emojis):
+    def check(reaction, reactor):
+        return (
+            reactor == user and
+            reaction.message.id == message_id and
+            str(reaction.emoji) in emojis
+        )
+    return check
 
 def get_command_prefix():
     config = configparser.ConfigParser()
