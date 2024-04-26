@@ -43,9 +43,13 @@ class YoutubeToMP4(src.cog.DiscordCog):
             await ctx.send(content="Please provide a URL!")
             return
 
-        format = "mp4"
+        format = "mp4" # TODO: support other video formats?
+
+        tmp = os.path.join(os.getcwd(), "tmp")
+        os.makedirs(tmp, exist_ok=True)
+
         file_name = f"temp_video_{uuid.uuid4()}.{format}"
-        file_path = os.path.join(os.getcwd(), file_name)
+        file_path = os.path.join(tmp, file_name)
 
         try:
             yt = pytube.YouTube(url, on_progress_callback=on_progress)
@@ -54,10 +58,16 @@ class YoutubeToMP4(src.cog.DiscordCog):
             if not stream:
                 stream = filter_streams.get_lowest_resolution()
 
+            initial_embed = discord.Embed(title="Downloading...", description=f"{yt.title} by {yt.author}", color=discord.Color.gold())
+            progress_message = await ctx.send(embed=initial_embed)
+
             download_complete = threading.Event()
-            download_thread = threading.Thread(target=download_file, args=(stream, os.getcwd(), file_name, download_complete))
+            download_thread = threading.Thread(target=download_file, args=(stream, tmp, file_name, download_complete))
             download_thread.start()
             download_complete.wait() # Wait here until the download is signaled to be complete
+
+            updated_embed = discord.Embed(title="Download Complete!", description=f"{yt.title} by {yt.author}", color=discord.Color.green())
+            await progress_message.edit(embed=updated_embed)
 
             if trim_file_if_too_large(file_path, format):
                 try:
