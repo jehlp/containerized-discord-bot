@@ -14,12 +14,13 @@ BYTES_PER_KB = 1024
 class YoutubeToMP4(src.cog.DiscordCog):
     def __init__(self, bot):
         super().__init__(bot)
+        self.format = 'mp4'
+        self.max_file_size_mb = src.utils.general.get_max_upload_size_mb() * 0.9 # Give some breathing room
         self.progress_message = None
         self.total_bytes = 0
+        self.upload_ready = False
         self.yt_title = ""
         self.yt_author = ""
-        self.upload_ready = False
-        self.max_file_size_mb = src.utils.general.get_max_upload_size_mb() * 0.9 # Give some breathing room
 
     def download_file(self, stream, file_path, file_name, completion_event):
         self.total_bytes = stream.filesize
@@ -35,7 +36,7 @@ class YoutubeToMP4(src.cog.DiscordCog):
 
         progress = (self.total_bytes - bytes_remaining) / self.total_bytes
 
-        # Because of Discord rate limits, we only update the progress bar at intervals of 5%
+        # Because of Discord API rate limits, we only update the progress bar at intervals of 5%
         if int(100 * progress) % 5 == 0 or bytes_remaining == 0:
             embed = discord.Embed(
                 title="Downloading...",
@@ -53,16 +54,18 @@ class YoutubeToMP4(src.cog.DiscordCog):
         if result.embeds[0].description[-4:] == '100%':
             self.upload_ready = True
 
-    def trim_file(self, file_path, format):
+    def trim_file(self, file_path):
         temp_file_path = f"{file_path}.temp"
         ffmpeg_command = [
             "ffmpeg", "-i", file_path, "-fs", str(int(self.max_file_size_mb * (BYTES_PER_KB ** 2))), 
-            "-c", "copy", "-f", format, temp_file_path
+            "-c", "copy", "-f", self.format, temp_file_path
         ]
         print("Executing:", ' '.join(ffmpeg_command))        
         result = subprocess.run(ffmpeg_command, capture_output=True)
         if result.returncode != 0:
             print("ffmpeg failed:", result.stderr)
+
+        # Replace the original file with the trimmed one
         os.remove(file_path)
         os.rename(temp_file_path, file_path)
 
@@ -72,19 +75,17 @@ class YoutubeToMP4(src.cog.DiscordCog):
             await ctx.send(content="Please provide a URL!")
             return
 
-        format = "mp4" # TODO: support other video formats?
-
         tmp = os.path.join(os.getcwd(), "tmp")
         os.makedirs(tmp, exist_ok=True)
 
-        file_name = f"temp_video_{uuid.uuid4()}.{format}"
+        file_name = f"temp_video_{uuid.uuid4()}.{self.format}"
         file_path = os.path.join(tmp, file_name)
 
         try:
             yt = pytube.YouTube(url, on_progress_callback=self.on_progress)
             self.yt_title = yt.title
             self.yt_author = yt.author
-            filter_streams = yt.streams.filter(file_extension=format, progressive=True)
+            filter_streams = yt.streams.filter(file_extension=self.format, progressive=True)
             stream = filter_streams.get_by_resolution(quality)
             if not stream:
                 stream = filter_streams.get_lowest_resolution()
@@ -94,7 +95,6 @@ class YoutubeToMP4(src.cog.DiscordCog):
                 description=f"{self.yt_title} by {self.yt_author}", 
                 color=discord.Color.gold()
             )
-
             self.progress_message = await ctx.send(embed=initial_embed)
 
             # Download the file in its own thread
@@ -107,19 +107,20 @@ class YoutubeToMP4(src.cog.DiscordCog):
             while not self.upload_ready:
                 await asyncio.sleep(0.5)
 
-            try:
-                if self.file_is_too_large(file_path):
-                    self.trim_file(file_path, format)
-                with open(file_path, 'rb') as file:
-                    await ctx.send(file=discord.File(file))              
-                final_embed = discord.Embed(
-                    title="Download Complete!",
-                    description=f"{self.yt_title} by {self.yt_author}", 
-                    color=discord.Color.green()
-                )
-                await self.progress_message.edit(embed=final_embed)
-            finally:
-                os.remove(file_path)
+            if self.file_is_too_large(file_path):
+                self.trim_file(file_path)
+            with open(file_path, 'rb') as file:
+                await ctx.send(file=discord.File(file))  
+
+            final_embed = discord.Embed(
+                title="Download Complete!",
+                description=f"{self.yt_title} by {self.yt_author}", 
+                color=discord.Color.green()
+            )
+            await self.progress_message.edit(embed=final_embed)
+
+            # Clean up the local video file when done
+            os.remove(file_path)
         except Exception as e:
             await ctx.send(content=f'Failed to download video: {e}')
 
