@@ -37,7 +37,11 @@ class ImageSearch(src.cog.DiscordCog):
         total_images = len(images)
 
         footer_text = f"Image {current_index + 1} of {total_images} | Search results for '{search_term}'"
-        message = await ctx.send(embed=src.utils.general.create_embed(image_url=images[0], footer_text=footer_text))
+        inital_embed = src.utils.general.create_embed(
+            image_url=images[0], 
+            footer_text=footer_text
+        )
+        message = await ctx.send(embed=inital_embed)
 
         emojis = ['⬅️', '➡️']
 

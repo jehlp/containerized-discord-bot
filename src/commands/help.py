@@ -1,5 +1,6 @@
 import discord
 import src.cog
+import src.utils.general
 from discord.ext import commands
 
 class Help(src.cog.DiscordCog):
@@ -9,13 +10,21 @@ class Help(src.cog.DiscordCog):
             # User asked for help on a specific command
             command = self.bot.get_command(command_name)
             if command and command.cog:
-                embed = discord.Embed(title=f"Help for `{command.name}`", description=command.cog.help(), color=discord.Color.green())
+                embed = src.utils.general.create_embed(
+                    title=f"Help for `{command.name}`", 
+                    description=command.cog.help(),
+                    color=discord.Color.green()
+                )
                 await ctx.send(embed=embed)
             else:
                 await ctx.send(content=f"No command named `{command_name}` found.")
         else:
             # General help, list all commands
-            embed = discord.Embed(title="Help", description="List of all available commands:", color=discord.Color.blue())
+            embed = src.utils.general.create_embed(
+                title="Help", 
+                description="List of all available commands:", 
+                color=discord.Color.blue()
+            )
             # Sort commands alphabetically
             for cog_name, cog in sorted(self.bot.cogs.items(), key=lambda item: item[0]):
                 command_list = [f"`{command.name}`: {cog.help()}" for command in cog.get_commands()]

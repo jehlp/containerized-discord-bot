@@ -21,7 +21,7 @@ class YoutubeSearch(src.cog.DiscordCog):
         if not results:
             await ctx.send("No results found.")
             return
-
+            
         current_index = 0
         embed = src.utils.general.create_embed(
             title=f'{results[current_index].title}',
