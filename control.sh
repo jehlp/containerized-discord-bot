@@ -1,40 +1,14 @@
 #!/bin/bash
 
-usage() {
-    echo "Usage: $0 [start|stop|restart]"
-    exit 1
-}
+usage() { echo "Usage: $0 [start|stop|restart]"; exit 1; }
 
-start() {
-    docker compose build --no-cache
-    docker compose up -d 
-}
+start() { docker compose build --no-cache && docker compose up -d; }
+stop() { docker compose down --rmi all --remove-orphans; }
+restart() { stop && start; }
 
-stop() {
-    docker compose down
-}
-
-restart() {
-    docker compose down
-    docker compose build --no-cache
-    docker compose up -d
-}
-
-if [[ $# -eq 0 ]]; then
-    usage
-fi
+[[ $# -eq 0 ]] && usage
 
 case "$1" in
-    start)
-        start
-        ;;
-    stop)
-        stop
-        ;;
-    restart)
-        restart
-        ;;
-    *)
-        usage
-        ;;
+    start|stop|restart) $1 ;;
+    *) usage ;;
 esac
