@@ -1,4 +1,5 @@
 import asyncio
+import conf.constants
 import discord
 import os
 import pytube
@@ -9,8 +10,6 @@ import subprocess
 import threading
 import uuid
 from discord.ext import commands
-
-BYTES_PER_KB = 1024
 
 class YoutubeSearch(src.cog.DiscordCog):
     @commands.command(name='yt')
@@ -59,7 +58,6 @@ class YoutubeToMP4(src.cog.DiscordCog):
     def __init__(self, bot):
         super().__init__(bot)
         self.format = 'mp4'
-        self.max_file_size_mb = src.utils.general.get_max_upload_size_mb() * 0.9 # Give some breathing room
         self.progress_message = None
         self.total_bytes = 0
         self.upload_ready = False
@@ -70,10 +68,6 @@ class YoutubeToMP4(src.cog.DiscordCog):
         self.total_bytes = stream.filesize
         stream.download(output_path=file_path, filename=file_name)
         completion_event.set()
-
-    def file_is_too_large(self, file_path):
-        file_size_mb = os.path.getsize(file_path) / (BYTES_PER_KB ** 2)
-        return file_size_mb > self.max_file_size_mb
 
     def on_progress(self, stream, chunk, bytes_remaining):
         print(f"Fetching {stream} --> Bytes remaining: {bytes_remaining}")
@@ -101,7 +95,7 @@ class YoutubeToMP4(src.cog.DiscordCog):
     def trim_file(self, file_path):
         temp_file_path = f"{file_path}.temp"
         ffmpeg_command = [
-            "ffmpeg", "-i", file_path, "-fs", str(int(self.max_file_size_mb * (BYTES_PER_KB ** 2))), 
+            "ffmpeg", "-i", file_path, "-fs", str(int(src.utils.general.get_max_upload_size_mb() * (conf.constants.BYTES_PER_KB ** 2))), 
             "-c", "copy", "-f", self.format, temp_file_path
         ]
         print("Executing:", ' '.join(ffmpeg_command))        
@@ -151,7 +145,7 @@ class YoutubeToMP4(src.cog.DiscordCog):
             while not self.upload_ready:
                 await asyncio.sleep(0.5)
 
-            if self.file_is_too_large(file_path):
+            if src.utils.general.file_is_too_large(file_path):
                 self.trim_file(file_path)
             with open(file_path, 'rb') as file:
                 await ctx.send(file=discord.File(file))  

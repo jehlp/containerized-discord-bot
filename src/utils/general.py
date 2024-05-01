@@ -1,5 +1,7 @@
+import conf.constants
 import configparser
 import discord
+import io
 import os
 import src.utils.postgres
 from discord.ext import commands
@@ -31,6 +33,17 @@ def create_reaction_check(message_id, user, emojis):
             str(reaction.emoji) in emojis
         )
     return check
+
+def file_is_too_large(file_path_or_bytesio_obj):
+    # Function may accept either a file_path or a BytesIO file object
+    try:
+        if isinstance(file_path_or_bytesio_obj, io.BytesIO):
+            file_size_mb = len(file_path_or_bytesio_obj.getvalue()) / (conf.constants.BYTES_PER_KB ** 2)
+        else:
+            file_size_mb = os.path.getsize(file_path_or_bytesio_obj) / (conf.constants.BYTES_PER_KB ** 2)
+        return file_size_mb > get_max_upload_size_mb()
+    except Exception as e:
+        print(f"Unable to determine if file of type {type(file_path_or_bytesio_obj)} is too large to upload: {e}")
 
 def get_command_prefix():
     config = configparser.ConfigParser()
@@ -76,7 +89,7 @@ def get_max_upload_size_mb():
     config = configparser.ConfigParser()
     config.read(CONFIG_PATH)
     # Default upload size is 16MB (Non-Nitro)
-    return int(config.get('settings', 'max_upload_size_mb', fallback=16))
+    return int(config.get('settings', 'max_upload_size_mb', fallback=16)) * 0.9 # Give some breathing room
 
 def get_shutdown_role():
     config = configparser.ConfigParser()
