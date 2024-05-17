@@ -1,7 +1,7 @@
 from discord import Color
 from discord.ext import commands
 from src.cog import DiscordCog
-from src.utils.general import create_embed
+from src.utils.general import create_embed, split_camel_case
 
 class Help(DiscordCog):
     @commands.command(name='help')
@@ -29,7 +29,8 @@ class Help(DiscordCog):
             for cog_name, cog in sorted(self.bot.cogs.items(), key=lambda item: item[0]):
                 command_list = [f"`{command.name}`: {cog.help()}" for command in cog.get_commands()]
                 if command_list:
-                    embed.add_field(name=cog_name, value="\n".join(command_list), inline=False)
+                    formatted_cog_name = split_camel_case(cog_name)
+                    embed.add_field(name=formatted_cog_name, value="\n".join(command_list), inline=False)
             await ctx.send(embed=embed)
 
     def help(self):

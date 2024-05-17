@@ -117,3 +117,11 @@ def increment_user_xp(author, dx=10):
         print(f"User {author}'s XP updated from {xp} to {xp + dx}")
     except Exception as e:
         print(f"Failed to update XP for {author}: {e}")
+
+def split_camel_case(my_str):
+    new_str = []
+    for idx in range(len(my_str)):
+        if idx > 1 and my_str[idx].isupper() and my_str[idx - 1].islower():
+            new_str.append(" ")
+        new_str.append(my_str[idx])
+    return "".join(new_str)
