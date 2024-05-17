@@ -1,7 +1,7 @@
-import src.cog
 from discord.ext import commands
+from src.cog import DiscordCog
 
-class MemberEvents(src.cog.DiscordCog):
+class MemberEvents(DiscordCog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         await self.log_event(f'{member} has joined the server.')

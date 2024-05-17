@@ -1,18 +1,18 @@
-import src.cog
-import src.utils.general
-import src.utils.asynchronous
+from src.cog import DiscordCog
+from src.utils.general import get_shutdown_role, has_role
+from src.utils.asynchronous import graceful_shutdown
 from discord.ext import commands
 
-class Shutdown(src.cog.DiscordCog):
+class Shutdown(DiscordCog):
     def __init__(self, bot):
         super().__init__(bot)
-        self.shutdown_role = src.utils.general.get_shutdown_role()
+        self.shutdown_role = get_shutdown_role()
 
     @commands.command(name='shutdown')
     async def command(self, ctx):
-        if src.utils.general.has_role(ctx.author, self.shutdown_role):
+        if has_role(ctx.author, self.shutdown_role):
             await ctx.send('Shutting down... 👋')
-            await src.utils.asynchronous.graceful_shutdown(self.bot)
+            await graceful_shutdown(self.bot)
         else:
             await ctx.send(f'You do not have the required role: {self.shutdown_role}')
 

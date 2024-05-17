@@ -1,7 +1,7 @@
-import src.cog
 from discord.ext import commands
+from src.cog import DiscordCog
 
-class ReactionEvents(src.cog.DiscordCog):
+class ReactionEvents(DiscordCog):
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
         await self.log_event(f'{user} added {reaction.emoji} to {reaction.message.content}')

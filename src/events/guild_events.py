@@ -1,7 +1,7 @@
-import src.cog
 from discord.ext import commands
+from src.cog import DiscordCog
 
-class GuildEvents(src.cog.DiscordCog):
+class GuildEvents(DiscordCog):
     @commands.Cog.listener()
     async def on_guild_update(self, before, after):
         await self.log_event(f'Guild updated from {before.name} to {after.name}')

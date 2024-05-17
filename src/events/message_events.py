@@ -1,8 +1,8 @@
-import src.cog
-import src.utils.general
 from discord.ext import commands
+from src.cog import DiscordCog
+from src.utils.general import increment_user_xp
 
-class MessageEvents(src.cog.DiscordCog):
+class MessageEvents(DiscordCog):
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author.bot:
@@ -11,7 +11,7 @@ class MessageEvents(src.cog.DiscordCog):
         await self.log_event(f'Message from {message.author}: {message.content}')
 
         # On message send, increase 'XP' of the sender
-        src.utils.general.increment_user_xp(message.author)
+        increment_user_xp(message.author)
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):

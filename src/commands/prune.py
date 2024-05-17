@@ -1,7 +1,7 @@
-import src.cog
 from discord.ext import commands
+from src.cog import DiscordCog
 
-class Prune(src.cog.DiscordCog):
+class Prune(DiscordCog):
     @commands.command(name='prune')
     async def command(self, ctx, num_to_delete=0):
         if num_to_delete:

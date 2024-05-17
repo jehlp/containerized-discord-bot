@@ -1,28 +1,28 @@
-import discord
-import io
-import src.cog
-import src.utils.general
-import zipfile
+from discord import File
 from discord.ext import commands
+from io import BytesIO
+from src.cog import DiscordCog
+from src.utils.general import file_is_too_large
+from zipfile import ZipFile, ZIP_DEFLATED
 
-class Compress(src.cog.DiscordCog):
+class Compress(DiscordCog):
     @commands.command(name="compress")
     async def command(self, ctx):
         if not ctx.message.attachments:
             return
         try:
             attachment = ctx.message.attachments[0]
-            data = io.BytesIO(await attachment.read())
-            zbuffer = io.BytesIO()
+            data = BytesIO(await attachment.read())
+            zbuffer = BytesIO()
 
-            with zipfile.ZipFile(zbuffer, "w", zipfile.ZIP_DEFLATED) as z:
+            with ZipFile(zbuffer, "w", ZIP_DEFLATED) as z:
                 z.writestr(attachment.filename, data.getvalue())
 
-            if src.utils.general.file_is_too_large(zbuffer):
+            if file_is_too_large(zbuffer):
                 await ctx.send(f"Compressed file is too large to upload!")
             else:
                 zbuffer.seek(0)
-                zipped_file = discord.File(fp=zbuffer, filename=f"{attachment.filename}.zip")
+                zipped_file = File(fp=zbuffer, filename=f"{attachment.filename}.zip")
                 await ctx.send(file=zipped_file)
         except Exception as e:
             await ctx.send(f"Unable to compress file: {e}")
